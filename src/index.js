@@ -1,8 +1,14 @@
 import getPopularMovieFromServer from './getPopularMovieFromServer';
 
-getPopularMovieFromServer();
+addPopularMovieToPage();
 
+function addPopularMovieToPage() {
+  getPopularMovieFromServer().then(data => {
+    console.log(data.results);
+    const {id, title, poster_path, release_date, genre_ids} = data.results;
 
+  });
+}
 
 
 
