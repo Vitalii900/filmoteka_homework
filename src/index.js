@@ -1,58 +1,113 @@
-import getPopularMovieFromServer from './getPopularMovieFromServer';
+import PopularMovieFromServer from './getPopularMovieFromServer';
+// import genresInfo from './genres_Info';
+
+const genresInfo = [
+  { id: 28, name: 'Action' },
+  { id: 12, name: 'Adventure' },
+  { id: 16, name: 'Animation' },
+  { id: 35, name: 'Comedy' },
+  { id: 80, name: 'Crime' },
+  { id: 99, name: 'Documentary' },
+  { id: 18, name: 'Drama' },
+  { id: 10751, name: 'Family' },
+  { id: 14, name: 'Fantasy' },
+  { id: 36, name: 'History' },
+  { id: 27, name: 'Horror' },
+  { id: 10402, name: 'Music' },
+  { id: 9648, name: 'Mystery' },
+  { id: 10749, name: 'Romance' },
+  { id: 878, name: 'Science Fiction' },
+  { id: 10770, name: 'TV Movie' },
+  { id: 53, name: 'Thriller' },
+  { id: 10752, name: 'War' },
+  { id: 37, name: 'Western' },
+];
+
+const mainListRef = document.querySelector('.film-list')
+
+const popularMovieFromServer = new PopularMovieFromServer;
 
 addPopularMovieToPage();
 
-function addPopularMovieToPage() {
-  getPopularMovieFromServer().then(data => {
-    console.log(data.results);
-    const {id, title, poster_path, release_date, genre_ids} = data.results;
-
+async function addPopularMovieToPage() {
+  // popularMovieFromServer.page = 2;
+  const popularMovie = await popularMovieFromServer.getPopularMovieFromServer().then(data => {
+    return data;
   });
+
+  addMurkupOnPage(popularMovie.results)
+
+}
+
+function addMurkupOnPage(array) {
+  const murkupFromArray = array.map(({id, poster_path, title, genre_ids, release_date}) => {
+    const imageUrl = `src="https://www.themoviedb.org/t/p/w500/${poster_path}"`;
+    const genre = getGenreArrayForOnCard(genre_ids);
+    // console.log(poster_path)
+    return `<li class="film-item" id="${id}">
+    <img width="280" class="film-img" ${imageUrl}" alt="${title}" />
+    <p class="film-name">
+      ${title} <br />
+      <span class="film-tag">${genre[0]} | ${release_date.slice(0, 4)}</span>
+    </p>
+  </li>`
+  }).join('');
+  mainListRef.insertAdjacentHTML('beforeend', murkupFromArray)
 }
 
 
-
-
-
-
-
-
-
-
-function addMurkupOnPage(arrayOfObjects) {
-  const murkupFromArray = arrayOfObjects.map(
-    ({
-      webformatURL,
-      largeImageURL,
-      tags,
-      likes,
-      views,
-      comments,
-      downloads,
-    }) => {
-      return `<div class="photo-card">
-              <a href="${largeImageURL}"> 
-                <img src="${webformatURL}" alt="${tags}" loading="lazy" />
-              </a>
-              <div class="info">
-                <p class="info-item">
-                  <b>Likes: </b>${likes}
-                </p>
-                <p class="info-item">
-                  <b>Views: </b>${views}
-                </p>
-                <p class="info-item">
-                  <b>Comments: </b>${comments}
-                </p>
-                <p class="info-item">
-                  <b>Downloads: </b>${downloads}
-                </p>
-              </div>
-      </div>`;
+function getGenreArrayForOnCard(genresIds) {
+  const genresArrayForOnCard = [];
+  
+  for (const genresId of genresIds) {
+    genresInfo.map(genre => {
+      if (genresId === genre.id) {
+        genresArrayForOnCard.push(genre.name);
       }
-    )
-    .join('');
-
-  galleryRef.insertAdjacentHTML('beforeend', murkupFromArray);
+    })
+  }
+  
+  return genresArrayForOnCard;
 }
+
+
+
+
+
+// function addMurkupOnPage(arrayOfObjects) {
+//   const murkupFromArray = arrayOfObjects.map(
+//     ({
+//       webformatURL,
+//       largeImageURL,
+//       tags,
+//       likes,
+//       views,
+//       comments,
+//       downloads,
+//     }) => {
+//       return `<div class="photo-card">
+//               <a href="${largeImageURL}"> 
+//                 <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+//               </a>
+//               <div class="info">
+//                 <p class="info-item">
+//                   <b>Likes: </b>${likes}
+//                 </p>
+//                 <p class="info-item">
+//                   <b>Views: </b>${views}
+//                 </p>
+//                 <p class="info-item">
+//                   <b>Comments: </b>${comments}
+//                 </p>
+//                 <p class="info-item">
+//                   <b>Downloads: </b>${downloads}
+//                 </p>
+//               </div>
+//       </div>`;
+//       }
+//     )
+//     .join('');
+
+//   galleryRef.insertAdjacentHTML('beforeend', murkupFromArray);
+// }
 
